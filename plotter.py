@@ -5,13 +5,13 @@ from PIL import Image
 import matplotlib.pyplot as plt
 
 
-serialPort = serial.Serial(port = "COM3",baudrate=500000, timeout=None) #bytesize=serial.EIGHTBITS, parity=serial.PARITY_NONE, stopbits=serial.STOPBITS_ONE,
+serialPort = serial.Serial(port = "COM3",baudrate=115200, timeout=None) #bytesize=serial.EIGHTBITS, parity=serial.PARITY_NONE, stopbits=serial.STOPBITS_ONE,
 serialString = ""                           # Used to hold data coming over UART
 
-xdim = 320
-ydim = 240
+xdim = 160
+ydim = 120
 
-bytesPerFrame = 320 * 240 * 2
+bytesPerFrame = xdim * ydim * 2
 
 def drawImage(buff):
     arr = np.frombuffer(buff,dtype=np.uint16).astype(np.uint32)
@@ -26,19 +26,19 @@ while(1):
     # Wait until there is data waiting in the serial buffer
     if(serialPort.in_waiting > 1):
         # Read data out of the buffer until a carraige return / new line is found
-        serialString = serialPort.read(size=bytesPerFrame)
-        #print(serialString)
+        serialString = serialPort.read_until(b'End', size=bytesPerFrame)
+        serialString = serialString[:-3]
         serialString = int.from_bytes(serialString, byteorder='little').to_bytes(bytesPerFrame, byteorder='big')
         #print(serialString)
 
         # Print the contents of the serial data
-        #print(list(serialString))
+        #print(serialString)
         im = drawImage(serialString)
-        # plt.imshow(im)
-        # plt.show()
-        # plt.pause(0.0001)
-        # plt.clf()
-        im.show()
-        #serialPort.reset_input_buffer()
+        plt.imshow(im)
+        plt.show()
+        plt.pause(0.0001)
+        plt.clf()
+        #im.show()
+        serialPort.reset_input_buffer()
 
         
