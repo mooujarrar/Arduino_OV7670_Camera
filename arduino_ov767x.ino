@@ -32,13 +32,13 @@
 
 int bytesPerFrame;
 
-byte data[320 * 240 * 2]; // QCIF at 2 bytes per pixel
+byte data[160 * 120 * 2]; // QCIF at 2 bytes per pixel
 
 void setup() {
-  Serial.begin(500000);
+  Serial.begin(115200);
   while (!Serial);
 
-  if (!Camera.begin(QVGA, RGB565, 5)) {
+  if (!Camera.begin(QQVGA, RGB565, 5)) {
     Serial.println("Failed to initialize camera!");
     while (1);
   }
@@ -51,6 +51,7 @@ void setup() {
 
 void loop() {
   Camera.readFrame(data);
-
   Serial.write(data, bytesPerFrame);
+  Serial.write("End");
+
 }
